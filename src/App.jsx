@@ -252,10 +252,12 @@ export default function App() {
                 {/* LEFT COLUMN */}
                 <aside className="col-span-1 md:col-span-3 border-b md:border-b-0 md:border-r border-current p-6 flex flex-col gap-8 min-h-full">
                   <div className="space-y-4">
-                    <div className={`aspect-[4/5] w-full bg-zinc-800 grayscale contrast-125 relative overflow-hidden group`}>
-                      <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                        <Cpu className="w-24 h-24 opacity-50" />
-                      </div>
+                    <div className={`aspect-[4/5] w-full bg-zinc-800 relative overflow-hidden group`}>
+                      <img
+                        src="/profile.png"
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
                       <div className="absolute bottom-0 left-0 right-0 bg-red-600 text-white p-2 font-mono text-xs text-center translate-y-full group-hover:translate-y-0 transition-transform">
                         OPEN FOR COLLABORATION
                       </div>
