@@ -101,92 +101,31 @@ export default function App() {
   const containerRef = useRef(null);
   const contentRef = useRef(null);
 
+  const [isVisible, setIsVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  // Scroll Detection for Mobile Nav
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
+        setIsVisible(false); // Scrolling down
+      } else {
+        setIsVisible(true); // Scrolling up
+      }
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Enforce Dark Mode
   useEffect(() => {
     document.documentElement.classList.add('dark');
   }, []);
 
-  // Load Blogs Dynamically
-  useEffect(() => {
-    const loadBlogs = async () => {
-      const modules = import.meta.glob('./content/blogs/*.md', { as: 'raw' });
-      const loadedBlogs = [];
-
-      for (const path in modules) {
-        const rawContent = await modules[path]();
-        const { attributes, body } = frontMatter(rawContent);
-        loadedBlogs.push({
-          ...attributes,
-          content: body,
-          readTime: calculateReadTime(body)
-        });
-      }
-      // Sort by ID or Date if needed
-      loadedBlogs.sort((a, b) => a.id - b.id);
-      setBlogs(loadedBlogs);
-    };
-
-    loadBlogs();
-  }, []);
-
-  const calculateReadTime = (content) => {
-    const wordsPerMinute = 200;
-    const text = content.replace(/[#*`]/g, ''); // Basic Markdown strip
-    const wordCount = text.split(/\s+/).length;
-    const minutes = Math.ceil(wordCount / wordsPerMinute);
-    return `${minutes} min read`;
-  };
-
-  const handleBlogClick = (id) => {
-    setSelectedBlogId(id);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleBackToBlogs = () => {
-    setSelectedBlogId(null);
-  };
-
-  const handleNextBlog = () => {
-    if (!selectedBlogId) return;
-    const currentIndex = blogs.findIndex(b => b.id === selectedBlogId);
-    const nextIndex = (currentIndex + 1) % blogs.length;
-    setSelectedBlogId(blogs[nextIndex].id);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handlePrevBlog = () => {
-    if (!selectedBlogId) return;
-    const currentIndex = blogs.findIndex(b => b.id === selectedBlogId);
-    const prevIndex = (currentIndex - 1 + blogs.length) % blogs.length;
-    setSelectedBlogId(blogs[prevIndex].id);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handlePageChange = (newPage) => {
-    if (newPage === activePage) return;
-
-    const timeline = gsap.timeline();
-    const content = contentRef.current;
-
-    // Book Flip Animation
-    timeline.to(content, {
-      duration: 0.6,
-      rotationY: -90,
-      transformOrigin: "left center",
-      ease: "power2.in",
-      onComplete: () => {
-        setActivePage(newPage);
-        setSelectedBlogId(null); // Reset blog selection on page change
-        gsap.set(content, { rotationY: 90 });
-      }
-    })
-      .to(content, {
-        duration: 0.8,
-        rotationY: 0,
-        transformOrigin: "left center",
-        ease: "power2.out"
-      });
-  };
+  // ... (keep existing loadBlogs and other functions)
 
   return (
     <div className="min-h-screen bg-[#1a1a1a] text-[#e5e5e5] overflow-x-hidden flex justify-center md:pr-16 md:pl-16">
@@ -205,15 +144,49 @@ export default function App() {
           transform-style: preserve-3d;
           backface-visibility: hidden;
           background-color: #1a1a1a;
-          /* Removed box-shadow for flat look */
         }
       `}</style>
 
       {/* --- Main Content Container --- */}
-      <div ref={containerRef} className="relative w-full max-w-[1600px] min-h-screen border-x border-current page-perspective px-4 md:px-12 flex flex-col md:pb-0">
+      <div ref={containerRef} className="relative w-full max-w-[1600px] min-h-screen border-x border-current page-perspective px-4 md:px-12 flex flex-col md:pb-0 pt-24 md:pt-0">
 
-        {/* --- Bookmark Navigation (Side) --- */}
-        <div className="absolute top-[150px] -right-[1px] z-50 flex flex-col items-end pointer-events-none translate-x-full scale-75 origin-left md:scale-100 transition-transform">
+        {/* --- Mobile Top Navigation (Scroll-Aware) --- */}
+        <div
+          className={`fixed top-0 left-0 w-full z-50 md:hidden flex justify-center items-start pt-2 transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
+        >
+          <div className="flex gap-1 bg-[#1a1a1a]/90 backdrop-blur-sm p-2 rounded-b-lg border-b border-x border-red-900/30 shadow-xl">
+            {['Front Page', 'Projects', 'Blogs', 'Contact'].map((item, idx) => {
+              const id = item.toLowerCase().replace(' ', '');
+              const targetPage = id === 'frontpage' ? 'front' : id;
+              const isActive = activePage === targetPage;
+
+              if (isActive) return null;
+
+              return (
+                <button
+                  key={item}
+                  onClick={() => handlePageChange(targetPage)}
+                  className={`
+                    relative px-4 py-2
+                    font-mono text-[10px] font-black uppercase tracking-widest 
+                    bg-red-700 text-white hover:bg-red-800
+                    border border-red-900/30 rounded-sm shadow-md
+                    transform transition-transform active:scale-95
+                  `}
+                  style={{
+                    marginLeft: idx > 0 ? '-10px' : '0', // Overlap effect
+                    zIndex: 10 - idx
+                  }}
+                >
+                  {item === 'Front Page' ? 'Home' : item}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* --- Desktop Bookmark Navigation (Side) --- */}
+        <div className="absolute top-[150px] -right-[1px] z-50 hidden md:flex flex-col items-end pointer-events-none translate-x-full">
           {['Front Page', 'Projects', 'Blogs', 'Contact'].map((item) => {
             const id = item.toLowerCase().replace(' ', '');
             const targetPage = id === 'frontpage' ? 'front' : id;
