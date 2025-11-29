@@ -6,7 +6,11 @@ import {
 } from 'lucide-react';
 import EmailComposer from './components/EmailComposer';
 import gsap from 'gsap';
-import { BLOGS } from './data/blogs';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import frontMatter from 'front-matter';
+import 'katex/dist/katex.min.css';
 
 // --- Styled Components & Icons Helpers ---
 
@@ -68,8 +72,6 @@ const PROJECTS = [
   }
 ];
 
-
-
 const STACK = [
   "Python / PyTorch", "TensorFlow / Keras", "Scikit-learn", "OpenCV",
   "Docker / Kubernetes", "AWS SageMaker", "FastAPI / Flask", "React / Next.js"
@@ -95,6 +97,7 @@ const EXPERIENCE = [
 export default function App() {
   const [activePage, setActivePage] = useState('front'); // 'front', 'projects', 'blogs', 'contact'
   const [selectedBlogId, setSelectedBlogId] = useState(null);
+  const [blogs, setBlogs] = useState([]);
   const containerRef = useRef(null);
   const contentRef = useRef(null);
 
@@ -103,9 +106,32 @@ export default function App() {
     document.documentElement.classList.add('dark');
   }, []);
 
+  // Load Blogs Dynamically
+  useEffect(() => {
+    const loadBlogs = async () => {
+      const modules = import.meta.glob('./content/blogs/*.md', { as: 'raw' });
+      const loadedBlogs = [];
+
+      for (const path in modules) {
+        const rawContent = await modules[path]();
+        const { attributes, body } = frontMatter(rawContent);
+        loadedBlogs.push({
+          ...attributes,
+          content: body,
+          readTime: calculateReadTime(body)
+        });
+      }
+      // Sort by ID or Date if needed
+      loadedBlogs.sort((a, b) => a.id - b.id);
+      setBlogs(loadedBlogs);
+    };
+
+    loadBlogs();
+  }, []);
+
   const calculateReadTime = (content) => {
     const wordsPerMinute = 200;
-    const text = content.replace(/<[^>]*>/g, ''); // Strip HTML tags
+    const text = content.replace(/[#*`]/g, ''); // Basic Markdown strip
     const wordCount = text.split(/\s+/).length;
     const minutes = Math.ceil(wordCount / wordsPerMinute);
     return `${minutes} min read`;
@@ -122,17 +148,17 @@ export default function App() {
 
   const handleNextBlog = () => {
     if (!selectedBlogId) return;
-    const currentIndex = BLOGS.findIndex(b => b.id === selectedBlogId);
-    const nextIndex = (currentIndex + 1) % BLOGS.length;
-    setSelectedBlogId(BLOGS[nextIndex].id);
+    const currentIndex = blogs.findIndex(b => b.id === selectedBlogId);
+    const nextIndex = (currentIndex + 1) % blogs.length;
+    setSelectedBlogId(blogs[nextIndex].id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handlePrevBlog = () => {
     if (!selectedBlogId) return;
-    const currentIndex = BLOGS.findIndex(b => b.id === selectedBlogId);
-    const prevIndex = (currentIndex - 1 + BLOGS.length) % BLOGS.length;
-    setSelectedBlogId(BLOGS[prevIndex].id);
+    const currentIndex = blogs.findIndex(b => b.id === selectedBlogId);
+    const prevIndex = (currentIndex - 1 + blogs.length) % blogs.length;
+    setSelectedBlogId(blogs[prevIndex].id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -482,7 +508,7 @@ export default function App() {
                   </header>
 
                   <div className="space-y-12">
-                    {BLOGS.map((blog) => (
+                    {blogs.map((blog) => (
                       <article
                         key={blog.id}
                         onClick={() => handleBlogClick(blog.id)}
@@ -495,7 +521,7 @@ export default function App() {
                           <div className="flex items-center gap-4 font-mono text-xs opacity-60 whitespace-nowrap">
                             <span>{blog.date}</span>
                             <span>•</span>
-                            <span>{calculateReadTime(blog.content)}</span>
+                            <span>{blog.readTime}</span>
                           </div>
                         </div>
                         <p className="font-mono text-sm opacity-80 leading-relaxed max-w-2xl">
@@ -512,7 +538,7 @@ export default function App() {
               ) : (
                 // ARTICLE VIEW
                 (() => {
-                  const blog = BLOGS.find(b => b.id === selectedBlogId);
+                  const blog = blogs.find(b => b.id === selectedBlogId);
                   return (
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                       {/* Navigation Bar */}
@@ -548,7 +574,7 @@ export default function App() {
                         <div className="flex items-center gap-4 font-mono text-xs text-red-600 uppercase tracking-widest mb-4">
                           <span>{blog.date}</span>
                           <span>•</span>
-                          <span>{calculateReadTime(blog.content)}</span>
+                          <span>{blog.readTime}</span>
                         </div>
                         <h1 className="font-serif text-5xl md:text-7xl font-bold leading-tight mb-8">
                           {blog.title}
@@ -556,10 +582,40 @@ export default function App() {
                       </header>
 
                       {/* Article Content */}
-                      <div
-                        className="prose prose-invert prose-lg max-w-none font-mono text-sm md:text-base leading-loose opacity-90 space-y-6 text-justify"
-                        dangerouslySetInnerHTML={{ __html: blog.content }}
-                      />
+                      <div className="prose prose-invert prose-lg max-w-none font-mono text-sm md:text-base leading-loose opacity-90 space-y-6 text-justify">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkMath]}
+                          rehypePlugins={[rehypeKatex]}
+                          components={{
+                            p: ({ node, ...props }) => <p className="mb-6" {...props} />,
+                            h1: ({ node, ...props }) => <h1 className="font-serif text-3xl font-bold mt-8 mb-4" {...props} />,
+                            h2: ({ node, ...props }) => <h2 className="font-serif text-2xl font-bold mt-8 mb-4" {...props} />,
+                            h3: ({ node, ...props }) => <h3 className="font-serif text-xl font-bold mt-6 mb-3" {...props} />,
+                            ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-6 space-y-2" {...props} />,
+                            ol: ({ node, ...props }) => <ol className="list-decimal pl-6 mb-6 space-y-2" {...props} />,
+                            blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-red-600 pl-4 italic my-6 opacity-80" {...props} />,
+                            code: ({ node, inline, className, children, ...props }) => {
+                              return inline ? (
+                                <code className="bg-zinc-800 px-1 py-0.5 rounded text-red-400 font-mono text-xs" {...props}>
+                                  {children}
+                                </code>
+                              ) : (
+                                <code className="block bg-zinc-900 p-4 rounded-lg overflow-x-auto text-xs font-mono my-6 border border-zinc-800" {...props}>
+                                  {children}
+                                </code>
+                              );
+                            },
+                            img: ({ node, ...props }) => (
+                              <div className="my-8 border border-zinc-800 p-2 bg-zinc-900/50">
+                                <img {...props} className="w-full h-auto" alt={props.alt || 'Blog Image'} />
+                                {props.alt && <p className="text-center text-xs text-zinc-500 mt-2 font-mono">{props.alt}</p>}
+                              </div>
+                            )
+                          }}
+                        >
+                          {blog.content}
+                        </ReactMarkdown>
+                      </div>
 
                       {/* Article Footer */}
                       <div className="mt-16 pt-8 border-t border-dashed border-current flex justify-between items-center opacity-60 font-mono text-xs">
