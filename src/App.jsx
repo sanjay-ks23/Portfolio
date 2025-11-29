@@ -210,10 +210,10 @@ export default function App() {
       `}</style>
 
       {/* --- Main Content Container --- */}
-      <div ref={containerRef} className="relative w-full max-w-[1600px] min-h-screen border-x border-current page-perspective px-4 md:px-12 flex flex-col pb-20 md:pb-0">
+      <div ref={containerRef} className="relative w-full max-w-[1600px] min-h-screen border-x border-current page-perspective px-4 md:px-12 flex flex-col md:pb-0">
 
-        {/* --- Desktop Bookmark Navigation (Side) --- */}
-        <div className="absolute top-[150px] -right-[1px] z-50 hidden md:flex flex-col items-end pointer-events-none translate-x-full">
+        {/* --- Bookmark Navigation (Side) --- */}
+        <div className="absolute top-[150px] -right-[1px] z-50 flex flex-col items-end pointer-events-none translate-x-full scale-75 origin-left md:scale-100 transition-transform">
           {['Front Page', 'Projects', 'Blogs', 'Contact'].map((item) => {
             const id = item.toLowerCase().replace(' ', '');
             const targetPage = id === 'frontpage' ? 'front' : id;
@@ -238,29 +238,6 @@ export default function App() {
                 }}
               >
                 {item}
-              </button>
-            )
-          })}
-        </div>
-
-        {/* --- Mobile Bottom Navigation --- */}
-        <div className="fixed bottom-0 left-0 w-full z-50 md:hidden bg-[#1a1a1a] border-t border-current flex justify-around items-center p-2 shadow-[0_-4px_10px_rgba(0,0,0,0.5)]">
-          {['Front Page', 'Projects', 'Blogs', 'Contact'].map((item) => {
-            const id = item.toLowerCase().replace(' ', '');
-            const targetPage = id === 'frontpage' ? 'front' : id;
-            const isActive = activePage === targetPage;
-
-            return (
-              <button
-                key={item}
-                onClick={() => handlePageChange(targetPage)}
-                className={`
-                  flex-1 py-3 text-center font-mono text-[10px] font-black uppercase tracking-widest
-                  transition-colors duration-200
-                  ${isActive ? 'bg-red-700 text-white' : 'text-zinc-500 hover:text-red-600'}
-                `}
-              >
-                {item === 'Front Page' ? 'Home' : item}
               </button>
             )
           })}
