@@ -21,45 +21,60 @@ const MobileNavigation = ({ activePage, onNavigate }) => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [lastScrollY]);
 
+    const navItems = ['Front Page', 'Projects', 'Blogs', 'Contact'];
+
     return (
         <div
             className={`
-        fixed top-0 left-0 w-full z-50 md:hidden bg-[#1a1a1a] pb-2
+        fixed top-0 left-0 w-full z-50 md:hidden bg-[#1a1a1a] pb-4
         transition-transform duration-300 ease-in-out
         ${isVisible ? 'translate-y-0' : '-translate-y-full'}
       `}
         >
-            {/* Book Container with Left Margin */}
-            <div className="ml-4 relative pt-4 pr-4">
+            <div className="relative w-full h-[80px]">
 
-                {/* The Spine Curve & Top Page Line */}
-                <div className="absolute top-4 left-0 w-full h-full border-l-2 border-[#e5e5e5] rounded-tl-2xl pointer-events-none z-0"></div>
+                {/* The Spine (Left Border + Curve) */}
+                <div className="absolute top-4 left-2 bottom-0 w-[20px] border-l-2 border-t-2 border-[#e5e5e5] rounded-tl-xl pointer-events-none z-0"></div>
 
-                {/* Page Lines (The Stack) */}
-                <div className="relative z-0 pl-4">
-                    {/* Line 1 (Top) */}
-                    <div className="h-[2px] w-full bg-[#e5e5e5] mb-2 shadow-sm"></div>
-                    {/* Line 2 */}
-                    <div className="h-[2px] w-[98%] bg-[#e5e5e5] mb-2 shadow-sm"></div>
-                    {/* Line 3 */}
-                    <div className="h-[2px] w-[96%] bg-[#e5e5e5] shadow-sm"></div>
-                </div>
+                {/* Page Lines (Staggered) */}
+                <div className="absolute top-4 left-[22px] right-0 h-[2px] bg-[#e5e5e5] shadow-sm z-0"></div>
+                <div className="absolute top-10 left-[22px] right-0 h-[2px] bg-[#e5e5e5] shadow-sm z-0"></div>
+                <div className="absolute top-16 left-[22px] right-0 h-[2px] bg-[#e5e5e5] shadow-sm z-0"></div>
 
-                {/* Tabs (Intersecting) */}
-                <div className="absolute top-0 left-6 right-0 flex justify-start items-end z-10 overflow-x-auto no-scrollbar pl-2">
-                    {['Front Page', 'Projects', 'Blogs', 'Contact'].map((item, index) => {
+                {/* Tabs (Staggered on Lines) */}
+                <div className="absolute top-0 left-[24px] right-0 h-full">
+                    {navItems.map((item, index) => {
                         const id = item.toLowerCase().replace(' ', '');
                         const targetPage = id === 'frontpage' ? 'front' : id;
                         const isActive = activePage === targetPage;
 
                         if (isActive) return null;
 
+                        // Stagger logic: 
+                        // Index 0 -> Line 1 (Top 0)
+                        // Index 1 -> Line 2 (Top 6)
+                        // Index 2 -> Line 3 (Top 12)
+                        // We need to map available items to these slots. 
+                        // Since one item is hidden (active), we have 3 slots for 3 items.
+
+                        // Calculate visual index among *rendered* items
+                        const renderedIndex = navItems.filter(i => {
+                            const iId = i.toLowerCase().replace(' ', '');
+                            const iTarget = iId === 'frontpage' ? 'front' : iId;
+                            return iTarget !== activePage;
+                        }).indexOf(item); // 0, 1, or 2
+
+                        // Determine top position based on visual index
+                        const topPos = renderedIndex * 24; // 0px, 24px, 48px (matching line spacing)
+                        const leftPos = renderedIndex * 90; // Horizontal spacing
+
                         return (
                             <button
                                 key={item}
                                 onClick={() => onNavigate(targetPage)}
                                 className={`
-                  relative px-3 py-2 mr-[-8px]
+                  absolute
+                  px-3 py-1
                   font-mono text-[9px] font-black uppercase tracking-widest
                   bg-red-700 text-white hover:bg-red-800
                   border border-red-900/50 rounded-t-md rounded-br-md
@@ -67,8 +82,9 @@ const MobileNavigation = ({ activePage, onNavigate }) => {
                   transform transition-transform active:scale-95
                 `}
                                 style={{
-                                    zIndex: 20 - index,
-                                    marginBottom: '6px' // Push down to intersect with lines
+                                    top: `${topPos}px`,
+                                    left: `${leftPos}px`,
+                                    zIndex: 20 - renderedIndex,
                                 }}
                             >
                                 {item === 'Front Page' ? 'Home' : item}

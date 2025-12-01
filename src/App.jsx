@@ -210,7 +210,7 @@ export default function App() {
       `}</style>
 
       {/* --- Main Content Container --- */}
-      <div ref={containerRef} className="relative w-full max-w-[1600px] min-h-screen border-x border-current page-perspective px-4 md:px-12 flex flex-col pt-20 md:pt-0 md:pb-0">
+      <div ref={containerRef} className="relative w-full max-w-[1600px] min-h-screen border-x border-current page-perspective px-4 md:px-12 flex flex-col pt-24 md:pt-0 md:pb-0 border-l-2 md:border-l border-[#e5e5e5] md:border-current ml-2 md:ml-0">
 
         {/* --- Mobile Navigation (Top) --- */}
         <MobileNavigation activePage={activePage} onNavigate={handlePageChange} />
@@ -637,10 +637,13 @@ export default function App() {
             </div>
           )}
 
-          {/* CONTACT PAGE VIEW */}
+          {/* CONTACT VIEW */}
           {activePage === 'contact' && (
-            <div className="flex items-center justify-center h-full flex-grow">
-              <div className="max-w-2xl w-full border-4 border-double border-current p-8 md:p-12 text-center bg-current/5">
+            <div className="flex flex-col h-full justify-center items-center text-center scale-90 origin-top md:scale-100">
+              <div className="border-4 border-double border-current p-8 md:p-12 max-w-2xl w-full relative">
+                {/* Corner Decorations */}
+                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-current -mt-1 -ml-1"></div>
+                <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-current -mt-1 -mr-1"></div>
                 <header className="mb-8">
                   <span className="font-mono text-xs uppercase tracking-widest opacity-60">Section D</span>
                   <h2 className="font-serif text-5xl md:text-7xl font-bold mb-6">The Signal</h2>
