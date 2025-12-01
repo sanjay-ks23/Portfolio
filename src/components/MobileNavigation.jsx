@@ -33,32 +33,41 @@ const MobileNavigation = ({ activePage, onNavigate }) => {
         >
             <div
                 className="
-          flex items-center justify-center gap-6 px-6 py-3
-          bg-[#1a1a1a]
-          border border-red-700
-          shadow-xl shadow-black/50
-          rounded-sm
+          flex items-center justify-center
+          bg-black/80 backdrop-blur-xl
+          border border-white/10
+          shadow-2xl shadow-black/50
+          rounded-2xl
+          overflow-hidden
         "
             >
-                {navItems.map((item) => {
+                {navItems.map((item, index) => {
                     const id = item.toLowerCase().replace(' ', '');
                     const targetPage = id === 'frontpage' ? 'front' : id;
                     const isActive = activePage === targetPage;
 
                     if (isActive) return null;
 
+                    // Check if this is the last item in the *rendered* list to avoid right border
+                    // But since we filter one out, it's tricky. 
+                    // Simpler: Add border-r to all, and remove from last-child via CSS class?
+                    // Or just use a separator element.
+
                     return (
-                        <button
-                            key={item}
-                            onClick={() => onNavigate(targetPage)}
-                            className="
-                font-mono text-[11px] font-bold uppercase tracking-widest
-                text-white hover:text-red-500
-                transition-colors duration-200
-              "
-                        >
-                            {item === 'Front Page' ? 'Home' : item}
-                        </button>
+                        <React.Fragment key={item}>
+                            <button
+                                onClick={() => onNavigate(targetPage)}
+                                className="
+                  px-5 py-3
+                  font-mono text-[10px] font-bold uppercase tracking-widest
+                  text-white/70 hover:text-red-500 hover:bg-white/5
+                  transition-all duration-200
+                  border-r border-white/10 last:border-r-0
+                "
+                            >
+                                {item === 'Front Page' ? 'Home' : item}
+                            </button>
+                        </React.Fragment>
                     );
                 })}
             </div>
