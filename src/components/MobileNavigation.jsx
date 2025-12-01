@@ -34,10 +34,10 @@ const MobileNavigation = ({ activePage, onNavigate }) => {
             <div
                 className="
           flex items-center justify-center
-          bg-black/80 backdrop-blur-xl
-          border border-white/10
+          bg-black/70 backdrop-blur-3xl
+          border border-red-700
           shadow-2xl shadow-black/50
-          rounded-2xl
+          rounded-sm
           overflow-hidden
         "
             >
