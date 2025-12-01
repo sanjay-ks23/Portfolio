@@ -219,6 +219,51 @@ const PUBLICATIONS = [
   }
 ];
 
+const CREDENTIALS = [
+  {
+    title: "OCI Generative AI Certified Professional",
+    issuer: "Oracle",
+    date: "Jul 2024",
+    link: "https://www.linkedin.com/in/sanjayks2317/details/certifications/"
+  },
+  {
+    title: "Artificial Intelligence Analyst",
+    issuer: "IBM",
+    date: "Jul 2023",
+    link: "https://courses.ibmcep.cognitiveclass.ai/certificates/74b10dec5a3b4c1aa566c5e6c5d73fe7"
+  },
+  {
+    title: "ML Summer School",
+    issuer: "Cohere Labs",
+    date: "Jul 2025",
+    link: "https://credsverse.com/credentials/afec0a3f-c934-41c0-9a07-7c50a2ebf012"
+  },
+  {
+    title: "Introduction to Model Context Protocol",
+    issuer: "Anthropic",
+    date: "Sep 2025",
+    link: "https://verify.skilljar.com/c/syicahbwgjj3"
+  },
+  {
+    title: "Model Context Protocol: Advanced Topics",
+    issuer: "Anthropic",
+    date: "Sep 2025",
+    link: "https://verify.skilljar.com/c/vyytsw2vx4ha"
+  },
+  {
+    title: "AWS Summit India Online 2025",
+    issuer: "Amazon Web Services",
+    date: "Jun 2025",
+    link: "https://www.linkedin.com/in/sanjayks2317/details/certifications/"
+  },
+  {
+    title: "Connect Conference 2025",
+    issuer: "Cohere Labs",
+    date: "Nov 2025",
+    link: "https://credsverse.com/credentials/d97048b7-82f9-4c34-be88-48269b25c09e"
+  }
+];
+
 // --- Main Application ---
 
 export default function App() {
@@ -625,6 +670,26 @@ export default function App() {
                           <div className="absolute -left-[29px] top-1.5 w-3 h-3 bg-red-600 rounded-full border-2 border-[var(--bg-paper)] group-hover:scale-125 transition-transform" />
                           <h5 className="font-bold leading-tight group-hover:text-red-600 transition-colors text-sm">{pub.title}</h5>
                           <div className="font-serif italic text-xs opacity-80 mt-1">{pub.publisher} • {pub.date}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <SectionTitle>Verified Credentials</SectionTitle>
+                    <div className="flex flex-col">
+                      {CREDENTIALS.map((cred, i) => (
+                        <div key={i} className="border-b border-gray-800 py-3 last:border-0">
+                          {cred.link ? (
+                            <a href={cred.link} target="_blank" rel="noopener noreferrer" className="group">
+                              <h5 className="font-serif font-bold text-white leading-tight mb-1 group-hover:text-red-600 transition-colors">{cred.title}</h5>
+                            </a>
+                          ) : (
+                            <h5 className="font-serif font-bold text-white leading-tight mb-1">{cred.title}</h5>
+                          )}
+                          <div className="font-mono text-xs text-[#888]">
+                            {cred.issuer} • {cred.date}
+                          </div>
                         </div>
                       ))}
                     </div>
