@@ -1095,31 +1095,38 @@ export default function App() {
                   </header>
 
                   <div className="space-y-12">
-                    {blogs.map((blog) => (
-                      <article
-                        key={blog.id}
-                        onClick={() => handleBlogClick(blog.id)}
-                        className="border-b border-dashed border-current pb-8 group cursor-pointer"
-                      >
-                        <div className="flex flex-col md:flex-row md:items-baseline gap-4 mb-2">
-                          <h3 className="font-serif text-4xl font-bold group-hover:text-red-600 transition-colors">
-                            {blog.title}
-                          </h3>
-                          <div className="flex items-center gap-4 font-mono text-xs opacity-60 whitespace-nowrap">
-                            <span>{blog.date}</span>
-                            <span>•</span>
-                            <span>{blog.readTime}</span>
+                    {blogs.length === 0 ? (
+                      <div className="py-24 text-center border-b border-dashed border-current">
+                        <div className="font-serif text-3xl font-bold italic mb-4 opacity-40">"The ink is still drying."</div>
+                        <div className="font-mono text-xs uppercase tracking-widest opacity-60">No blogs as of now</div>
+                      </div>
+                    ) : (
+                      blogs.map((blog) => (
+                        <article
+                          key={blog.id}
+                          onClick={() => handleBlogClick(blog.id)}
+                          className="border-b border-dashed border-current pb-8 group cursor-pointer"
+                        >
+                          <div className="flex flex-col md:flex-row md:items-baseline gap-4 mb-2">
+                            <h3 className="font-serif text-4xl font-bold group-hover:text-red-600 transition-colors">
+                              {blog.title}
+                            </h3>
+                            <div className="flex items-center gap-4 font-mono text-xs opacity-60 whitespace-nowrap">
+                              <span>{blog.date}</span>
+                              <span>•</span>
+                              <span>{blog.readTime}</span>
+                            </div>
                           </div>
-                        </div>
-                        <p className="font-mono text-sm opacity-80 leading-relaxed max-w-2xl">
-                          {blog.excerpt}
-                        </p>
-                        <div className="mt-4 flex items-center gap-2 text-red-600 font-mono text-xs uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
-                          <span>Read Article</span>
-                          <ArrowUpRight size={12} />
-                        </div>
-                      </article>
-                    ))}
+                          <p className="font-mono text-sm opacity-80 leading-relaxed max-w-2xl">
+                            {blog.excerpt}
+                          </p>
+                          <div className="mt-4 flex items-center gap-2 text-red-600 font-mono text-xs uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                            <span>Read Article</span>
+                            <ArrowUpRight size={12} />
+                          </div>
+                        </article>
+                      ))
+                    )}
                   </div>
                 </>
               ) : (
