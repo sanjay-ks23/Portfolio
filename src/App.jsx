@@ -362,6 +362,12 @@ const CREDENTIALS = [
     link: "https://www.linkedin.com/in/sanjayks2317/details/certifications/"
   },
   {
+    title: "Machine Learning with Python: from Linear Models to Deep Learning",
+    issuer: "MITx",
+    date: "Aug 2024",
+    link: "https://courses.edx.org/certificates/cb60894862b84a748279b8824738dcb9"
+  },
+  {
     title: "Connect Conference 2025",
     issuer: "Cohere Labs",
     date: "Nov 2025",
@@ -875,8 +881,8 @@ export default function App() {
                         <h4 className="font-bold text-lg leading-none mb-1">Cohere Labs Open Science Community</h4>
                         <div className="font-serif italic text-sm opacity-80 mb-1">Community Member</div>
                         <div className="font-mono text-xs opacity-70 mb-2">Jun 2025 - Present</div>
-                        <p className="font-mono text-xs opacity-70 leading-relaxed text-justify">
-                          Selected as a member of the Cohere Labs Open Science Community, a global collective of researchers advancing LLM interpretability. Completed the intensive ML Summer School and participated in the 2025 Cohere Connect Conference, exchanging insights on agentic workflows with industry pioneers.
+                        <p className="font-mono text-sm opacity-70 leading-relaxed text-justify">
+                          A member of the Cohere Labs Open Science Community, a global collective of researchers advancing LLM interpretability. Completed the intensive ML Summer School and participated in the 2025 Cohere Connect Conference, exchanging insights on agentic workflows with industry pioneers.
                         </p>
                       </div>
                     </div>
